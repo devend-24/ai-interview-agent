@@ -1,15 +1,14 @@
 import React from 'react'
 import DashboardProvider from './provider'
 
-function DashboardLayout({children}) {
+function DashboardLayout({ children }) {
   return (
-    <div>
-        <DashboardProvider>
-            {children}
-        </DashboardProvider>
-    </div>
+    <DashboardProvider>
+      <div>
+        {children}
+      </div>
+    </DashboardProvider>
   )
 }
 
 export default DashboardLayout
-
