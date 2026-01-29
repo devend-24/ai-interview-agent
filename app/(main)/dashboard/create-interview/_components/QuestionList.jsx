@@ -12,7 +12,7 @@ import QuestionListContainer from "./QuestionListContainer";
 import {useUser} from '@/app/provider'
 
 
-function QuestionList({ formData }) {
+function QuestionList({ formData, onCreateLink }) {
 
   const [loading, setLoading] = useState(false);
   const [questionList, setQuestionList] = useState([]);
@@ -64,8 +64,10 @@ function QuestionList({ formData }) {
         ])
         .select()
 
-          setSaveLoading(false);
-        console.log(data);
+        setSaveLoading(false);
+
+        onCreateLink( interview_id )
+        // console.log(data);
   }
 
   return (
@@ -96,7 +98,7 @@ function QuestionList({ formData }) {
     <div className="flex justify-end mt-10">
       <Button onClick={()=>onFinish()} disabled={saveLoading}>
         {saveLoading && <Loader2 className='animate-spin'/>}  
-        Finish
+        Create Interview Link & Finish
       </Button>
     </div>
   </>
