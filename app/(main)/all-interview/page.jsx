@@ -1,9 +1,11 @@
+"use client"
+
 import React, {useEffect, useState} from 'react';
 import { Camera, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/services/supabaseClient';
 import { useUser } from '@/app/provider';
-import InterviewCard from './InterviewCard';
+import InterviewCard from '@/app/(main)/dashboard/_components/InterviewCard';
 
 function LatestInterviewsList() {
   const [interviewList, setInterviewList] = useState([]);
@@ -18,8 +20,7 @@ function LatestInterviewsList() {
       .from('Interviews')
       .select('*')
       .eq('userEmail',user?.email)
-      .order('id', { ascending: false })
-      .limit(6);
+      .order('id', { ascending: false });
 
     console.log(Interviews);
     setInterviewList(Interviews);
@@ -28,7 +29,7 @@ function LatestInterviewsList() {
 
   return (
     <div className='my-5'>
-        <h2 className='font-bold text-2xl'>Previously Created Interviews</h2>
+        <h2 className='font-bold text-2xl'>All Interviews</h2>
     
         {interviewList?.length==0 && 
         <div className='p-5 flex flex-col gap-3 items-center bg-white rounded-2xl mt-5'>

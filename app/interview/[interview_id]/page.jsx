@@ -18,6 +18,7 @@ function Interview() {
     console.log(interview_id)
     const [interviewData, setInterviewData]=useState();
     const [userName, setUserName] = useState();
+    const [userEmail, setUserEmail] = useState();
     const [loading,setLoading] = useState(false);
     const {interviewInfo, setInterviewInfo} = useContext(InterviewDataContext);
     const router=useRouter();
@@ -62,6 +63,7 @@ function Interview() {
             console.log(Interviews[0]);
         setInterviewInfo({
             userName:userName,
+            userEmail:userEmail,
             interviewData:Interviews[0]
         });
         router.push('/interview/'+interview_id+'/start')
@@ -69,49 +71,124 @@ function Interview() {
     }
 
   return (
-    <div className='px-10 md:px-28 lg:px-48 xl:px-80 mt-16'>
-        <div className='flex flex-col items-center justify-center border rounded-lg bg-white p-7 lg:px-33 xl:px-52 mb-20'>
-            <Image src='/mainlogo.png' alt='logo'
-                  width={100}
-                  height={100}
-                  className='w-[75px] h-[50px]'
-                  />
-            <h2 className='mt-3'>AI-Powered Interview Platform</h2>
+    <div className='min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-zinc-950 dark:to-zinc-900 py-12 px-4'>
+        <div className='max-w-2xl mx-auto'>
+            {/* Header Card */}
+            <div className='bg-white dark:bg-zinc-900 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden'>
+                
+                {/* Logo & Title Section */}
+                <div className='bg-gradient-to-r from-blue-500 to-blue-600 text-white p-8 text-center'>
+                    <div className='flex justify-center mb-4'>
+                        <Image 
+                            src='/mainlogo.png' 
+                            alt='logo'
+                            width={100}
+                            height={100}
+                            className='w-20 h-auto bg-white rounded-lg p-2'
+                        />
+                    </div>
+                    <h1 className='text-2xl font-bold'>AI-Powered Interview Platform</h1>
+                    <p className='text-blue-100 mt-2'>Prepare for success with AI-driven practice</p>
+                </div>
 
-            <Image src={'/interview.jpg'} alt='interview'
-                width={500}
-                height={500}
-                className='w-[250px] my-6'
-            />
+                {/* Content Section */}
+                <div className='p-8'>
+                    
+                    {/* Interview Image */}
+                    <div className='flex justify-center mb-6'>
+                        <Image 
+                            src={'/interview.jpg'} 
+                            alt='interview'
+                            width={500}
+                            height={500}
+                            className='w-48 h-auto rounded-lg shadow-md'
+                        />
+                    </div>
 
-            <h2 className='font-bold text-xl '>{interviewData?.jobPosition}</h2>
-            <h2 className='flex gap-2 items-center text-gray-500 mt-3'><Clock />
-                {interviewData?.duration}
-            </h2>
-        
-            <div className='w-full'>
-                <h2>Enter your full name</h2>
-                <Input placeholder='e.g. John Smith' onChange={(event)=>setUserName(event.target.value)}/>
-            </div>
+                    {/* Job Details */}
+                    <div className='text-center mb-8 space-y-2'>
+                        <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+                            {interviewData?.jobPosition}
+                        </h2>
+                        <div className='flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400'>
+                            <Clock className='w-4 h-4' />
+                            <span className='text-sm'>{interviewData?.duration}</span>
+                        </div>
+                    </div>
 
-            <div className='p-3 bg-blue-100 flex gap-4 rounded-lg mt-5'>
-                <Info className='text-primary'/>
-                <div>
-                    <h2 className='font-bold'>Before you begin</h2>
-                    <ul>
-                        <li className='text-sm text-primary'>Test your camera and microphone</li>
-                        <li className='text-sm text-primary'>Ensure you have a stable internet connection</li>
-                        <li className='text-sm text-primary'>Find a Quiet place for interview</li>
-                    </ul>
+                    {/* Divider */}
+                    <div className='border-t border-gray-200 dark:border-zinc-800 my-6'></div>
+
+                    {/* Name Input */}
+                    <div className='mb-6'>
+                        <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+                            Enter your full name
+                        </label>
+                        <Input 
+                            placeholder='e.g. John Smith' 
+                            onChange={(event) => setUserName(event.target.value)}
+                            className='w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500'
+                        />
+                    </div>
+
+                    {/* Email Input */}
+                    <div className='mb-6'>
+                        <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+                            Enter your email address
+                        </label>
+                        <Input 
+                            placeholder='e.g. john@company.com' 
+                            onChange={(event) => setUserEmail(event.target.value)}
+                            className='w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500'
+                        />
+                    </div>
+
+                    {/* Info Box */}
+                    <div className='bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-4 mb-6'>
+                        <div className='flex gap-3'>
+                            <Info className='w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5'/>
+                            <div>
+                                <h3 className='font-semibold text-gray-900 dark:text-white mb-2'>
+                                    Before you begin
+                                </h3>
+                                <ul className='space-y-1.5 text-sm text-gray-700 dark:text-gray-300'>
+                                    <li className='flex items-start gap-2'>
+                                        <span className='text-blue-600 dark:text-blue-400'>✓</span>
+                                        Test your camera and microphone
+                                    </li>
+                                    <li className='flex items-start gap-2'>
+                                        <span className='text-blue-600 dark:text-blue-400'>✓</span>
+                                        Ensure you have a stable internet connection
+                                    </li>
+                                    <li className='flex items-start gap-2'>
+                                        <span className='text-blue-600 dark:text-blue-400'>✓</span>
+                                        Find a quiet place for the interview
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Join Button */}
+                    <Button 
+                        className='w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2'
+                        disabled={loading || !userName}
+                        onClick={() => onJoinInterview()}
+                    > 
+                        {loading ? (
+                            <Loader2Icon className='w-5 h-5 animate-spin' />
+                        ) : (
+                            <Video className='w-5 h-5' />
+                        )}
+                        {loading ? 'Joining...' : 'Join Interview'}
+                    </Button>
                 </div>
             </div>
 
-            <Button className='mt-5 w-full font-bold'
-                disabled={loading || !userName}
-                onClick={()=>onJoinInterview()}
-            > 
-                <Video /> {loading && <Loader2Icon/>}Join Interview
-            </Button>
+            {/* Footer Note */}
+            <p className='text-center text-sm text-gray-500 dark:text-gray-400 mt-6'>
+                Your privacy is important. This session will not be recorded.
+            </p>
         </div>
     </div>
   )

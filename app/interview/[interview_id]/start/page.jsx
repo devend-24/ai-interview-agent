@@ -1,154 +1,146 @@
-"use client"
-import { InterviewDataContext } from '@/context/InterviewDataContext'
-import React, { useContext, useEffect, useRef } from 'react'
-import {Timer, Mic, Phone} from 'lucide-react'
-import Image from 'next/image'
-import Vapi from '@vapi-ai/web'
-import AlertConfirmation from './_components/AlertConfirmation'
+"use client";
+
+import { InterviewDataContext } from "@/context/InterviewDataContext";
+import React, { useContext, useRef, useState, useEffect } from "react";
+import { Timer } from "lucide-react";
+import Image from "next/image";
+import CodingQuestion from "./_components/CodingQuestion";
+import Chat from "./_components/Chat";
+
+
 
 
 function StartInterview() {
-  const {interviewInfo, setInterviewInfo}=useContext(InterviewDataContext);
-  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY);
-  const hasStartedRef = useRef(false);
+  const { interviewInfo } = useContext(InterviewDataContext);
+  console.log("Interview Info in Start Page:", interviewInfo);
 
-useEffect(() => {
-  if (!interviewInfo?.interviewData?.questionList?.length) return;
+  // 🔑 single bridge between Chat & CodingQuestion
+  const sendMessageRef = useRef(null);
 
-  if (hasStartedRef.current) return; // 🛑 block second run
+  // timer
+    const [timeLeft, setTimeLeft] = useState(0);
+  const [isActive, setIsActive] = useState(false);
 
-  hasStartedRef.current = true;
-  startCall();
-}, [interviewInfo]);
+  // Parse duration and convert to seconds
+  useEffect(() => {
+    if (interviewInfo?.interviewData?.duration) {
+      const duration = interviewInfo.interviewData.duration;
+      const minutes = parseInt(duration.match(/\d+/)[0]); // Extract number from "30 Min"
+      setTimeLeft(minutes * 60); // Convert to seconds
+      setIsActive(true); // Start timer automatically
+    }
+  }, [interviewInfo]);
 
+  // Countdown logic
+  useEffect(() => {
+    if (!isActive || timeLeft <= 0) return;
 
-const startCall = () => {
-  if (!interviewInfo?.interviewData?.questionList?.length) {
-    console.log("Question list not ready", interviewInfo);
-    return;
-  }
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setIsActive(false);
+          // Optional: trigger callback when timer ends
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-  const questionList = interviewInfo.interviewData.questionList
-    .map(q => q.question)
-    .join(",");
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft]);
 
-  
-  const assistantOptions = {
-    name: "AI Recruiter",
-
-    firstMessage:
-      `Hi ${interviewInfo?.userName}, how are you? Ready for your interview on ${interviewInfo?.interviewData?.jobPosition}`,
-
-    transcriber: {
-      provider: "deepgram",
-      model: "nova-2",
-      language: "en-US",
-    },
-
-    voice: {
-      provider: "11labs",
-      voiceId: "CwhRBWXzGAHq8TQ4Fs17",
-    },
-
-    model: {
-      // provider: "custom",
-      // model: "llama-3.1-8b-instant",
-
-    provider: "custom-llm",
-    url: "https://api.groq.com/v1/llama-3.3-70b-versatile/completions/chat/completions",
-    model: "llama-3.3-70b-versatile",
-    messages: [
-        {
-          role: "system",
-          content: `
-  You are an AI voice assistant conducting interviews.
-
-  Your job is to ask candidates the provided interview questions and assess their responses.
-
-  Begin the conversation with a friendly introduction, setting a relaxed yet professional tone.
-  Example:
-  "Hey there! Welcome to your ${interviewInfo?.interviewData?.jobPosition} interview. Let's get started with a few questions!"
-
-  Ask one question at a time and wait for the candidate's response before proceeding.
-  Keep the questions clear and concise.
-
-  Below are the questions. Ask them one by one:
-  ${questionList}
-
-  If the candidate struggles, offer hints or rephrase the question without giving away the answer.
-  Example:
-  "Need a hint? Think about how React tracks component updates!"
-
-  Provide brief, encouraging feedback after each answer.
-  Examples:
-  "Nice! That's a solid answer."
-  "Hmm, not quite! Want to try again?"
-
-  Keep the conversation natural and engaging.
-  Use casual phrases like:
-  "Alright, next up..."
-  "Let's tackle a tricky one!"
-
-  After 5–7 questions, wrap up the interview smoothly by summarizing their performance.
-  End on a positive note.
-  Examples:
-  "That was great! You handled some tough questions well. Keep sharpening your skills!"
-  "Thanks for chatting! Hope to see you crushing projects soon!"
-
-  Key Guidelines:
-  - Be friendly, engaging, and witty
-  - Keep responses short and natural
-  - Adapt based on the candidate's confidence level
-  - Ensure the interview remains focused on the role
-          `.trim(),
-        },
-      ],
-    },
+  // Format time as HH:MM:SS
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  vapi.start(assistantOptions)
+return (
+    <div className="flex h-screen bg-gray-50 dark:bg-zinc-950">
+      {/* LEFT PANEL - Sidebar */}
+      <div className="flex flex-col w-64 bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 p-6 space-y-6">
+        
+        {/* Header */}
+        <div className="space-y-2">
+          <h2 className="font-bold text-lg text-gray-900 dark:text-white">
+            AI Interview Session
+          </h2>
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <Timer className="w-4 h-4" />
+            <span className="font-mono">{formatTime(timeLeft)}</span>
+          </div>
+        </div>
 
-};
+        <div className="h-px bg-gray-200 dark:bg-zinc-800"></div>
 
-const stopInterview=()=>{
-  vapi.stop();
-}
+        {/* AI Recruiter Card */}
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-xl border border-blue-200 dark:border-blue-900 p-4 text-center space-y-3">
+          <div className="mx-auto w-16 h-16 bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center shadow-md">
+            <Image
+              src="/robot.png"
+              alt="ai"
+              width={100}
+              height={100}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white">AI Recruiter</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Online</p>
+          </div>
+        </div>
 
+        {/* User Card */}
+        <div className="bg-gray-50 dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700 p-4 text-center space-y-3">
+          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md">
+            {interviewInfo?.userName?.[0]}
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white">{interviewInfo?.userName}</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Candidate</p>
+          </div>
+        </div>
 
-  return (
-    <div className='p-20 lg:px-48 xl:px-56'>
-      <h2 className='font-bold text-xl flex justify-between'>AI Interview Session
-          <span className='flex gap-2 items-center'>
-            <Timer />
-            00:00:00
-          </span>
-      </h2>
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-7 mt-5'>
-            <div className='bg-white h-[400px] rounded-lg border flex flex-col gap-3 items-center justify-center'>
-              <Image src={'/robot.png'} alt='ai'
-                width={100}
-                height={100}
-                className='w-[60px] h-[60px] rounded-full object-cover'
-              />
-              <h2>AI Recruiter</h2>
-            </div>
-
-            <div className='bg-white h-[400px] rounded-lg border flex flex-col gap-3 flex items-center justify-center'>
-              <h2 className='text-2xl bg-primary text-white p-3 rounded-full px-5'>{interviewInfo?.userName[0]}</h2>
-              <h2>{interviewInfo?.userName}</h2>
-            </div>
+        {/* Status Indicator */}
+        <div className="mt-auto pt-4 border-t border-gray-200 dark:border-zinc-800">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-gray-600 dark:text-gray-400">Session Active</span>
+          </div>
+        </div>
       </div>
 
-      <div className='flex items-center gap-5 justify-center mt-7'>
-              <Mic className='h-12 w-12 p-3 bg-gray-500 text-white rounded-full cursor-pointer'/>
-              <AlertConfirmation stopInterview={()=>stopInterview()}>
-                <Phone className='h-12 w-12 p-3 bg-red-500 text-white rounded-full cursor-pointer'/>
-              </AlertConfirmation>
+      {/* CHAT PANEL */}
+      <div className="flex-1 flex flex-col h-screen bg-white dark:bg-zinc-900">
+        <Chat
+          onSendReady={(sendMessage) => {
+            sendMessageRef.current = sendMessage;
+          }}
+          interview_id={interviewInfo?.interviewData?.interview_id}
+          interviewData={interviewInfo?.interviewData}
+        />
       </div>
-      <h2 className='text-sm text-gray-400 text-center mt-5'>Interview in Progress...</h2>
+
+      {/* CODING PANEL */}
+      <div className="flex-1 flex flex-col h-screen bg-gray-50 dark:bg-zinc-950 border-l border-gray-200 dark:border-zinc-800">
+        <div className="p-6">
+          <CodingQuestion
+            onSubmit={({ language, code }) => {
+              sendMessageRef.current?.({
+                text: JSON.stringify({
+                  type: "CODE_SUBMISSION",
+                  language,
+                  code,
+                }),
+              });
+            }}
+          />
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default StartInterview
+export default StartInterview;

@@ -9,7 +9,7 @@ export const SideBarOptions=[
     {
         name:'Scheduled Interview',
         icon:Calendar,
-        path:'/schedule-interview'
+        path:'/scheduled-interview'
     },
     {
         name:'All Interview',
@@ -62,11 +62,16 @@ Interview Duration: {{duration}}
 Interview Type: {{type}}
 
 Your task:
-1. Analyze the job description to identify key responsibilities, required skills, and expected experience.
-2. Generate interview questions based on the interview duration.
-3. Adjust the number and depth of questions to match the interview duration.
-4. Ensure the questions match the tone and structure of a real-life {{type}} interview.
-5. Include a mix of question types such as Technical, Behavioral, Experience, Problem Solving, and Leadership (where applicable).
+1. Include 1–2 Data Structures & Algorithms (DSA) coding questions of Easy to Medium difficulty.
+   - Each DSA question must be practical and interview-relevant.
+   - Prefer topics like arrays, strings, hash maps, stacks, queues, recursion, or basic trees.
+   - also give constraints in each question.
+
+2. Analyze the job description to identify key responsibilities, required skills, and expected experience.
+3. Generate interview questions based on the interview duration.
+4. Adjust the number and depth of questions to match the interview duration.
+5. Ensure the questions match the tone and structure of a real-life {{type}} interview.
+6. Include a mix of question types such as Technical, Behavioral, Experience, Problem Solving, and Leadership (where applicable).
 
 Response format (IMPORTANT):
 Return ONLY valid JSON. Do NOT include explanations, markdown, or extra text.
@@ -87,4 +92,37 @@ The JSON structure must be exactly:
 }
 
 The goal is to create a structured, relevant, and time-optimized interview plan for a {{jobTitle}} role.
+`;
+
+
+export const FEEDBACK_PROMPT = `
+    {{conversation}}
+    Depends on this Interview Conversation between assitant and user,
+    Give me feedback for user interview. Give me rating out of 10 for 
+    technical Skills, Communication, Problem Solving, Experince. 
+    Also give me summary in 3 lines about the interview and one line 
+    to let me know whether is recommanded for hire or not with msg.
+    Give me response in JSON format like this
+    {
+        feedback:{
+            rating:{
+                techicalSkills:5,
+                Communication:6,
+                problemSolving:4,
+                Experience:7
+        },
+        summary:<in 3 Line>,
+        Recommendation:"",
+        RecommendationMsg:""
+        }
+    }
+
+
+    IMPORTANT:
+- Return ONLY valid JSON.
+- Do NOT include explanation.
+- Do NOT include markdown.
+- Do NOT wrap in \`\`\`json.
+- Output must start with { and end with }.
+
 `;

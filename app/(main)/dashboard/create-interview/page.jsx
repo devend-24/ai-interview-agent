@@ -8,6 +8,7 @@ import {Progress} from '@/components/ui/progress'
 import FormContainer from './_components/FormContainer'
 import QuestionList from './_components/QuestionList'
 import {toast} from 'sonner'
+import {useUser} from '@/app/provider'
 
 function CreateInterview() {
     const router=useRouter();
@@ -19,6 +20,7 @@ function CreateInterview() {
       type: []
     });
     const [interviewId, setInterviewId] = useState();
+    const {user} = useUser();
 
     const onHandleInputChange=(field,value)=>{
         setFormData(prev=>({
@@ -30,6 +32,10 @@ function CreateInterview() {
     }
 
     const onGoToNext=()=>{
+      if(user?.credits<=0){
+        toast('Please add credits')
+        return;
+      }
       if(!formData?.jobPosition || 
         !formData?.jobDescription || 
         !formData?.duration || 
