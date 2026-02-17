@@ -10,6 +10,7 @@ import { useParams } from 'next/navigation'
 import { supabase } from '@/services/supabaseClient'
 import {toast} from "sonner";
 import { InterviewDataContext } from '@/context/InterviewDataContext'
+import ResumeUpload from './start/_components/fileUpload';
 
 
 function Interview() {
@@ -142,6 +143,22 @@ function Interview() {
                             className='w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500'
                         />
                     </div>
+
+                    {/* Resume Input */}
+                    <div className='mb-6'>
+                        <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+                            Upload your Resume
+                        </label>
+                        <ResumeUpload
+                        onSuccess={(text, name) => {
+                            setResumeText(text);
+                            setFileName(name);
+                        }}
+                        />
+                    </div>
+                    
+
+
 
                     {/* Info Box */}
                     <div className='bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-4 mb-6'>
