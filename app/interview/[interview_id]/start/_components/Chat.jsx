@@ -5,6 +5,7 @@ import { useRef, useState, useEffect, useContext } from "react";
 import VoiceChat from "./VoiceChat";
 import { supabase } from "@/services/supabaseClient";
 import { InterviewDataContext } from "@/context/InterviewDataContext";
+import { useRouter } from "next/navigation";
 
 
 
@@ -41,6 +42,8 @@ export default function Chat({ onSendReady, interview_id, interviewData }) {
   // const [conversation, setConversation] = useState();
   const [showEndCallModal, setShowEndCallModal] = useState(false);
   const { interviewInfo } = useContext(InterviewDataContext);
+  const router = useRouter();
+
   
   console.log(messages);
 
@@ -227,30 +230,25 @@ export default function Chat({ onSendReady, interview_id, interviewData }) {
 
 
 
-
-
-
 <button
   onClick={async () => {
     setShowEndCallModal(false);
-    
+
     try {
-      // Send conversation to AI feedback API
       const response = await fetch('/api/ai-feedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          conversation: messages, // messages from useChat hook
+          conversation: messages,
         }),
       });
-      
+
       if (response.ok) {
         const conversation = await response.json();
-        console.log('AI Feedback:', conversation);
 
-        const {data, error} = await supabase
+        const { data, error } = await supabase
           .from('interview-feedback')
           .insert([
             {
@@ -258,30 +256,23 @@ export default function Chat({ onSendReady, interview_id, interviewData }) {
               userEmail: interviewInfo?.userEmail,
               interview_id: interview_id,
               feedback: conversation,
-            }
+            },
           ])
-          .select()
-        
-        console.log(data);
+          .select();
 
-        // Optional: Store feedback data if needed before redirecting
-        // localStorage.setItem('interviewFeedback', JSON.stringify(feedbackData));
-        
-        // Redirect to completed page
-        // window.location.href = `/interview/${interview_id}/completed`;
+        if (error) {
+          console.error(error);
+        }
       } else {
-        const error = await response.json();
-        console.error('Failed to get AI feedback:', error);
-        // Redirect anyway or show error message
-        // window.location.href = `/interview/${interview_id}/completed`;
+        console.error("AI feedback failed");
       }
+
     } catch (error) {
-      console.error('Error calling AI feedback API:', error);
-      // Redirect anyway or show error message
-      // window.location.href = `/interview/${interview_id}/completed`;
+      console.error("Error:", error);
+    } finally {
+      router.push(`/interview/${interview_id}/completed`);
     }
   }}
-    className="px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors dark:text-white cursor-pointer"
 >
   End Interview
 </button>
