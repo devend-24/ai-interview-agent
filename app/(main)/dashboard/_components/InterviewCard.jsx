@@ -53,7 +53,7 @@ function InterviewCard({interview, viewDetail=false}) {
         <h2 className='mt-2 flex justify-between text-gray-500'>{interview?.duration}
             <span className='text-green-500'>{interview['interview-feedback']?.length} Candidates</span>
         </h2>
-        <Link href={'/scheduled-interview' + interview?.interview_id + '/details '} className='w-full'>
+        <Link href={'/scheduled-interview/' + interview?.interview_id + '/details '} className='w-full'>
         <Button className="mt-5 w-full" variant="outline">View Detail <ArrowRight/> </Button>
         </Link>
         </>
