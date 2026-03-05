@@ -1,3 +1,6 @@
+import { supabase } from '@/services/supabaseClient'
+import { useState } from 'react'
+import {toast} from 'sonner'
 import React,{useEffect} from 'react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -9,10 +12,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useParams } from 'next/navigation'
+
 
 function CandidateFeedbackDialog({ candidate, onSendRating }) {
   const feedback = candidate?.feedback?.feedback
-
+  const {interview_id} = useParams(); 
+  
+  console.log("mail", candidate)
+  console.log("ID: ", interview_id)
   const ratings = feedback?.rating;
 
   const averageRating = ratings
@@ -27,6 +35,26 @@ function CandidateFeedbackDialog({ candidate, onSendRating }) {
   useEffect(() => {
     onSendRating(averageRating);
   }, [averageRating]);
+
+
+  const [decisionMade, setDecisionMade] = useState(false);
+  const handleDecision = async (decision) => {
+    if (decisionMade) return;
+
+    const { error } = await supabase
+      .from('interview-feedback')
+      .update({ recommeded: decision })
+      .eq('interview_id', interview_id)
+      .eq('userEmail', candidate.userEmail);
+
+    if (!error) {
+      setDecisionMade(true);
+      toast(`Candidate ${decision ? "Accepted" : "Rejected"} successfully`);
+    } else {
+      console.error(error);
+      toast("Something went wrong");
+    }
+  };
 
   return (
     <Dialog>
@@ -84,8 +112,25 @@ function CandidateFeedbackDialog({ candidate, onSendRating }) {
                           <h2 className={`font-bold ${feedback?.Recommendation=='No'?'text-red-600':'text-green-600'}`}>Recommedation Msg:</h2>
                           <p className={`${feedback?.Recommendation=='No'?'text-red-500':'text-green-500'}`}>{feedback?.RecommendationMsg}</p>
                         </div>
-                        <Button className={`${feedback?.Recommendation=='No'?'bg-red-600':'bg-green-600'}`}>Send Msg</Button>
                   </div>
+                  <div className="flex gap-5 mt-5 ">
+                    <Button
+                      disabled={decisionMade}
+                      onClick={() => handleDecision(true)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      Accept
+                    </Button>
+
+                    <Button
+                      disabled={decisionMade}
+                      onClick={() => handleDecision(false)}
+                      variant="destructive"
+                    >
+                      Reject
+                    </Button>
+                  </div>
+
               </div>
             </div>
           </DialogDescription>
@@ -95,4 +140,4 @@ function CandidateFeedbackDialog({ candidate, onSendRating }) {
   )
 }
 
-export default CandidateFeedbackDialog
+export default CandidateFeedbackDialog 

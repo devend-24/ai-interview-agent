@@ -28,6 +28,19 @@ export const SideBarOptions=[
     },
 ]
 
+export const candidateSideBar = [
+    {
+        name:'Profile',
+        icon:LayoutDashboard,
+        path:'/candidate/profile'
+    },
+    {
+        name:'Interviews Section',
+        icon:Calendar,
+        path:'/candidate/interview'
+    }
+]
+
 export const InterviewType = [
     {
         title: 'Technical',

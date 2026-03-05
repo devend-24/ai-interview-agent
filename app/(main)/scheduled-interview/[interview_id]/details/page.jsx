@@ -34,7 +34,10 @@ function InterviewDetail() {
     <div className='mt-5'>
       <h2 className='font-bold text-2xl'>Interview Details</h2>
       <InterviewDetailContainer interviewDetail={interviewDetail}/> 
-      <CandidateList candidateList={interviewDetail?.['interview-feedback']}/>
+      <CandidateList 
+        candidateList={interviewDetail?.['interview-feedback']}
+        interview_d={interview_id}
+      />
     </div>
   )
 }

@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Button } from '@/components/ui/button'
 import CandidateFeedbackDialog from './CandidateFeedbackDialog';
 
-function CandidateList({candidateList=[]}) {
+function CandidateList({candidateList=[], interview_id}) {
 
   const [avgRating, setAvgRating] = useState(0);
 
@@ -12,7 +12,7 @@ function CandidateList({candidateList=[]}) {
     <div className='p-5'>
         <h2 className='font-bold my-5'>Candidates ({candidateList?.length})</h2>
       {candidateList.map((candidate, index)=>(
-        <div key={index} className='p-5 flex gap-3 items-center justify-between bg-white rounded-lg '>
+        <div key={index} className='p-5 mb-2 flex gap-3 items-center justify-between bg-white rounded-lg '>
             
             <div className='flex items-center gap-5'>
                 <h2 className='bg-primary p-3 px-5 font-bold text-white rounded-full'>{candidate.userName[0]}</h2>
@@ -22,8 +22,12 @@ function CandidateList({candidateList=[]}) {
                 </div>
             </div>
             <div className='flex gap-3  items-center'>
-                <h2 className='text-green-500'>{avgRating}/10</h2>
-                <CandidateFeedbackDialog candidate={candidate} onSendRating={setAvgRating}/>
+                
+                <CandidateFeedbackDialog 
+                  candidate={candidate} 
+                  interview_id={interview_id}
+                  onSendRating={setAvgRating}
+                />
             </div>
         </div>
       ))}

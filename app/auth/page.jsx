@@ -1,15 +1,24 @@
 "use client"
 
-import React from 'react'
+import React,{useState} from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/services/supabaseClient'
 
 const Login = () => {
 
+  const [role, setRole] = useState("candidate");
+
+
   const signInWithGoogle=async()=>{
+
+    localStorage.setItem("selectedRole", role);
+
     const {error}=await supabase.auth.signInWithOAuth({
-      provider: 'google'
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     })
 
     if(error){
@@ -34,6 +43,35 @@ const Login = () => {
           />
           <h2 className='text-2xl font-bold text-center mt-5'>Welcome to AI Hiring Platform</h2>
           <p className='text-gray-500 text-center'>Sign In With Google Authentication</p>
+
+          <div className="flex py-3 gap-4 w-full">
+            <button
+              type="button"
+              onClick={() => setRole("recruiter")}
+              className={`flex-1 py-3 rounded-xl border transition-all duration-200
+                ${
+                  role === "recruiter"
+                    ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                }`}
+            >
+              Recruiter
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRole("candidate")}
+              className={`flex-1 py-3 rounded-xl border transition-all duration-200
+                ${
+                  role === "candidate"
+                    ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                }`}
+            >
+              Candidate
+            </button>
+          </div>
+          
           <Button className='mt-7 w-full'
           onClick={signInWithGoogle}
           >Login with Google</Button>

@@ -11,7 +11,7 @@ function WelcomeContainer() {
     console.log("User from context:", user);
 
     return (
-    <div  className='bg-white p-5 rounded-2xl flex justify-between items-center'>
+    <div  className='bg-white p-6 flex justify-between items-center'>
       <div>
         <h2 className='text-lg font-bold'>Welcome Back, {user?.name}</h2>
         <h2 className='text-gray-500'>AI-Driven Interviews, Hassel-Free Hiring</h2>

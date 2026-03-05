@@ -35,7 +35,7 @@ function LatestInterviewsList() {
         <div className='p-5 flex flex-col gap-3 items-center bg-white rounded-2xl mt-5'>
             <Video className='h-10 w-10 text-primary' />
             <h2>You don't have any interview created!</h2>
-            <Button>+ Create New Inerview</Button>
+            <Button>+ Create New Interview</Button>
         </div>}
         {interviewList &&
             <div className='mt-5 grid grid-cols-2 xl:grid-cols-3 gap-5'>
