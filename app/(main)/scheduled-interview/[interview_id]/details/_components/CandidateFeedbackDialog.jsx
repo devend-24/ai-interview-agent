@@ -106,7 +106,7 @@ function CandidateFeedbackDialog({ candidate, onSendRating }) {
               <div className='mt-5'>
                   <h2 className='font-bold'>Performance Summary</h2>
                   <div>
-                    <p className='text-sm leading-6'>{feedback?.summary}</p>
+                    <p className='text-sm leading-6'>{feedBack?.summary}</p>
                   </div>
                   <div className="p-5 mt-10 rounded-md bg-gray-100">
                     <h2 className="font-bold">Recommendation Msg:</h2>
