@@ -17,6 +17,7 @@ import { useParams } from 'next/navigation'
 
 function CandidateFeedbackDialog({ candidate, onSendRating }) {
   const feedback = candidate?.feedback?.feedback
+  const feedBack = candidate?.feedback
   const {interview_id} = useParams(); 
   
   console.log("mail", candidate)
@@ -109,7 +110,7 @@ function CandidateFeedbackDialog({ candidate, onSendRating }) {
                   </div>
                   <div className="p-5 mt-10 rounded-md bg-gray-100">
                     <h2 className="font-bold">Recommendation Msg:</h2>
-                    <p>{feedback?.RecommendationMsg}</p>
+                    <p>{feedBack?.RecommendationMsg}</p>
                   </div>
                   <div className="flex gap-5 mt-5 ">
                     <Button
