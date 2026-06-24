@@ -9,16 +9,57 @@ export default function InterviewsPage() {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!user?.email) return;
+  // useEffect(() => {
+  //   if (!user?.email) return;
 
-    fetch(`/api/candidate-interviews?email=${user.email}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setInterviews(data.data || []);
-        setLoading(false);
+  //   fetch(`/api/candidate-interviews?email=${user.email}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setInterviews(data.data || []);
+  //       setLoading(false);
+  //     });
+  // }, [user]);
+
+  useEffect(() => {
+  if (!user?.email) return;
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    // 1. Fetch interviews
+    const res = await fetch(`/api/candidate-interviews?email=${user.email}`);
+    const interviewData = await res.json();
+    const interviewsList = interviewData.data || [];
+
+    // 2. Fetch feedback for all interview_ids
+    const ids = interviewsList.map(i => i.interview_id);
+
+    let feedbackMap = {};
+
+    if (ids.length > 0) {
+      const { data: feedback } = await fetch("/api/interview-feedback", {
+        method: "POST",
+        body: JSON.stringify({ ids }),
+      }).then(res => res.json());
+
+      // 3. Create lookup
+      feedback?.forEach(item => {
+        feedbackMap[item.interview_id] = item.recommeded;
       });
-  }, [user]);
+    }
+
+    // 4. Merge data
+    const merged = interviewsList.map(i => ({
+      ...i,
+      recommeded: feedbackMap[i.interview_id] ?? null,
+    }));
+
+    setInterviews(merged);
+    setLoading(false);
+  };
+
+  fetchData();
+}, [user]);
 
   const getStatus = (recommeded) => {
     if (recommeded === true) {
