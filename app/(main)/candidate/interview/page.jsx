@@ -21,45 +21,53 @@ export default function InterviewsPage() {
   // }, [user]);
 
   useEffect(() => {
-  if (!user?.email) return;
-
-  const fetchData = async () => {
-    setLoading(true);
-
-    // 1. Fetch interviews
-    const res = await fetch(`/api/candidate-interviews?email=${user.email}`);
-    const interviewData = await res.json();
-    const interviewsList = interviewData.data || [];
-
-    // 2. Fetch feedback for all interview_ids
-    const ids = interviewsList.map(i => i.interview_id);
-
-    let feedbackMap = {};
-
-    if (ids.length > 0) {
-      const { data: feedback } = await fetch("/api/interview-feedback", {
-        method: "POST",
-        body: JSON.stringify({ ids }),
-      }).then(res => res.json());
-
-      // 3. Create lookup
-      feedback?.forEach(item => {
-        feedbackMap[item.interview_id] = item.recommeded;
-      });
-    }
-
-    // 4. Merge data
-    const merged = interviewsList.map(i => ({
-      ...i,
-      recommeded: feedbackMap[i.interview_id] ?? null,
-    }));
-
-    setInterviews(merged);
-    setLoading(false);
-  };
-
-  fetchData();
-}, [user]);
+    if (!user?.email) return;
+  
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+  
+        // 1. Interviews
+        const res = await fetch(`/api/candidate-interviews?email=${user.email}`);
+        const interviewData = await res.json();
+        const interviewsList = interviewData.data || [];
+  
+        // 2. Feedback
+        const ids = interviewsList.map(i => i.interview_id);
+  
+        let feedbackMap = {};
+  
+        if (ids.length > 0) {
+          const res2 = await fetch("/api/interview-feedback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids }),
+          });
+  
+          const data2 = await res2.json();
+  
+          data2.data?.forEach(item => {
+            feedbackMap[item.interview_id] = item.recommeded;
+          });
+        }
+  
+        // 3. Merge
+        const merged = interviewsList.map(i => ({
+          ...i,
+          recommeded: feedbackMap[i.interview_id] ?? null,
+        }));
+  
+        setInterviews(merged);
+  
+      } catch (err) {
+        console.error("Fetch failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [user]);
 
   const getStatus = (recommeded) => {
     if (recommeded === true) {
@@ -326,7 +334,7 @@ export default function InterviewsPage() {
                   </td>
                 </tr>
               ) : (
-                interviews.reverse().map((item, index) => (
+                interviews.slice().reverse().map((item, index) => (
                   <tr key={index}>
                     <td>
                       <div className="iw-job-position">{item.jobPosition}</div>
