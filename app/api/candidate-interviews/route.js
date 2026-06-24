@@ -29,23 +29,23 @@ export async function GET(request) {
       return Response.json({ error }, { status: 500 });
     }
 
-    const formattedData = data.map((interview) => ({
-      jobPosition: interview.jobPosition,
-      interview_id: interview.interview_id,
-      recommeded: interview["interview-feedback"]?.[0]?.recommeded ?? null,
-    }));
+    // const formattedData = data.map((interview) => ({
+    //   jobPosition: interview.jobPosition,
+    //   interview_id: interview.interview_id,
+    //   recommeded: interview["interview-feedback"]?.[0]?.recommeded ?? null,
+    // }));
     // Filter feedback for this specific user email
-    // const formattedData = data.map((interview) => {
-    //   const feedback = interview["interview-feedback"]?.find(
-    //     (f) => f.userEmail === email
-    //   );
+    const formattedData = data.map((interview) => {
+      const feedback = interview["interview-feedback"]?.find(
+        (f) => f.userEmail === email
+      );
 
-    //   return {
-    //     jobPosition: interview.jobPosition,
-    //     interview_id: interview.interview_id,
-    //     recommeded: feedback ? feedback.recommeded : null,
-    //   };
-    // });
+      return {
+        jobPosition: interview.jobPosition,
+        interview_id: interview.interview_id,
+        recommeded: feedback ? feedback.recommeded : null,
+      };
+    });
 
     return Response.json({ data: formattedData });
 
