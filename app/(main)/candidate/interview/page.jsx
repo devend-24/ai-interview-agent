@@ -20,8 +20,8 @@ export default function InterviewsPage() {
       });
   }, [user]);
 
-  const getStatus = (recommended) => {
-    if (recommended === true) {
+  const getStatus = (recommeded) => {
+    if (recommeded === true) {
       return (
         <span style={styles.badgeAccepted}>
           <span style={styles.badgeDot("#16a34a")} />
@@ -29,7 +29,7 @@ export default function InterviewsPage() {
         </span>
       );
     }
-    if (recommended === false) {
+    if (recommeded === false) {
       return (
         <span style={styles.badgeRejected}>
           <span style={styles.badgeDot("#dc2626")} />
@@ -45,6 +45,8 @@ export default function InterviewsPage() {
     );
   };
 
+  console.log("Interviews data: ", interviews);
+  
   return (
     <>
       <style>{`
@@ -283,7 +285,7 @@ export default function InterviewsPage() {
                   </td>
                 </tr>
               ) : (
-                interviews.map((item, index) => (
+                interviews.reverse().map((item, index) => (
                   <tr key={index}>
                     <td>
                       <div className="iw-job-position">{item.jobPosition}</div>
