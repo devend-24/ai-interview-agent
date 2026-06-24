@@ -9,65 +9,17 @@ export default function InterviewsPage() {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   if (!user?.email) return;
-
-  //   fetch(`/api/candidate-interviews?email=${user.email}`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setInterviews(data.data || []);
-  //       setLoading(false);
-  //     });
-  // }, [user]);
-
   useEffect(() => {
     if (!user?.email) return;
-  
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-  
-        // 1. Interviews
-        const res = await fetch(`/api/candidate-interviews?email=${user.email}`);
-        const interviewData = await res.json();
-        const interviewsList = interviewData.data || [];
-  
-        // 2. Feedback
-        const ids = interviewsList.map(i => i.interview_id);
-  
-        let feedbackMap = {};
-  
-        if (ids.length > 0) {
-          const res2 = await fetch("/api/interview-feedback", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ids }),
-          });
-  
-          const data2 = await res2.json();
-  
-          data2.data?.forEach(item => {
-            feedbackMap[item.interview_id] = item.recommeded;
-          });
-        }
-  
-        // 3. Merge
-        const merged = interviewsList.map(i => ({
-          ...i,
-          recommeded: feedbackMap[i.interview_id] ?? null,
-        }));
-  
-        setInterviews(merged);
-  
-      } catch (err) {
-        console.error("Fetch failed:", err);
-      } finally {
+
+    fetch(`/api/candidate-interviews?email=${user.email}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setInterviews(data.data || []);
         setLoading(false);
-      }
-    };
-  
-    fetchData();
+      });
   }, [user]);
+
 
   const getStatus = (recommeded) => {
     if (recommeded === true) {
